@@ -1,0 +1,718 @@
+<title>Crit Agenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap">
+<style>
+:root {
+  --desk: #eceeef;
+  --paper: #fdfdff;
+  --rule: #cdd0db;
+  --rule-2: #8e92a6;
+  --ink: #23242c;
+  --ink-2: #666979;
+  --gold: #c39a3d;
+  --gold-2: #efd894;
+  --gold-soft: #f8efd4;
+  --on-gold: #2a2110;
+  --blush: #fbe9ef;
+  --cover: #efc9d6;
+  --rose: #c1105f;
+  --danger: #b3122f;
+  --veil: rgba(28, 28, 40, .45);
+  --shadow: 0 14px 30px -14px rgba(40, 40, 70, .35);
+  --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --desk: #131419; --paper: #1d1e26; --rule: #383a49; --rule-2: #63667b; --ink: #eceaf2; --ink-2: #a3a6b7;
+    --gold: #d8b45c; --gold-2: #f0d78f; --gold-soft: #3a3320; --on-gold: #241b08;
+    --blush: #33212a; --cover: #5a2f42; --rose: #ff6aa9; --danger: #ff7a8e; --veil: rgba(0, 0, 0, .6);
+    --shadow: 0 14px 30px -14px rgba(0, 0, 0, .7);
+  }
+}
+:root[data-theme="dark"] {
+  --desk: #131419; --paper: #1d1e26; --rule: #383a49; --rule-2: #63667b; --ink: #eceaf2; --ink-2: #a3a6b7;
+  --gold: #d8b45c; --gold-2: #f0d78f; --gold-soft: #3a3320; --on-gold: #241b08;
+  --blush: #33212a; --cover: #5a2f42; --rose: #ff6aa9; --danger: #ff7a8e; --veil: rgba(0, 0, 0, .6);
+  --shadow: 0 14px 30px -14px rgba(0, 0, 0, .7);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--desk); color: var(--ink); font: 15px/1.4 var(--sans); padding-inline: 20px; padding-block: 18px 160px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
+.wrap { max-width: 720px; margin-inline: auto; }
+
+/* the paper page + gold spiral */
+.paper { position: relative; background: var(--paper); border-radius: 3px 10px 10px 3px; padding: 18px 16px 28px 32px; box-shadow: 4px 5px 0 var(--cover), var(--shadow); }
+.paper::before {
+  content: ""; position: absolute; left: -12px; top: 12px; bottom: 12px; width: 32px; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='22' viewBox='0 0 32 22'%3E%3Crect x='19' y='8' width='11' height='5.5' rx='2.7' fill='%2333303a' fill-opacity='.85'/%3E%3Cpath d='M1 16 C5 3 22 1 29 10.6' fill='none' stroke='%23b48a2e' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M1.4 15 C5.6 3.6 21 2 28 10' fill='none' stroke='%23f3dfa0' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E") repeat-y;
+}
+
+/* running head */
+.head { display: flex; align-items: center; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--rule-2); }
+.num { font: italic 500 36px/1 var(--serif); }
+.hm { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.hm b { font: 600 17px/1.1 var(--serif); white-space: nowrap; }
+.hm span { color: var(--ink-2); font-size: 12px; }
+.hb { position: relative; width: 36px; height: 36px; flex: none; border: 1px solid var(--rule); border-radius: 50%; background: transparent; display: grid; place-items: center; padding: 0; }
+.hb svg { width: 18px; height: 18px; }
+.hb .n { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--rose); color: #fff; font: 600 10px/18px var(--sans); text-align: center; }
+.quote { margin: 8px 0 0; text-align: right; font: italic 400 11.5px var(--serif); color: var(--ink-2); }
+.ptitle { margin: 18px 0 4px; font: 700 26px/1.1 var(--serif); letter-spacing: -.005em; text-wrap: balance; }
+.ptitle.big { font-size: 30px; }
+
+/* reminder box (due soon) */
+.alert { margin-top: 14px; padding: 10px 12px 12px; border: 1px solid var(--rule-2); background: var(--blush); }
+.bl { display: block; font: italic 500 12.5px var(--serif); color: var(--ink-2); margin-bottom: 4px; }
+.alert ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.alert li { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 500; }
+.alert li em { font: italic 500 12.5px var(--serif); color: var(--rose); white-space: nowrap; }
+.alert li.over em { color: var(--danger); font-weight: 600; }
+.link { border: 0; background: none; padding: 8px 0 0; font: italic 500 12.5px var(--serif); color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+
+/* status circle */
+.st { width: 34px; height: 34px; flex: none; border: 0; background: none; padding: 0; display: grid; place-items: center; color: var(--on-gold); }
+.st i { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--ink-2); display: grid; place-items: center; }
+.st i svg { width: 12px; height: 12px; }
+.st[data-s="doing"] i { border-color: var(--gold); background: linear-gradient(90deg, var(--gold) 50%, transparent 50%); }
+.st[data-s="done"] i { border-color: var(--gold); background: var(--gold); }
+
+/* ruled rows */
+.row { display: flex; align-items: center; gap: 4px; min-height: 38px; border-bottom: 1px solid var(--rule); }
+.row.blank { min-height: 34px; }
+.ttl { flex: 1; min-width: 0; text-align: left; background: none; border: 0; padding: 6px 0; font: 15px/1.3 var(--sans); }
+.row.isdone .ttl, .trow.isdone .ttl { text-decoration: line-through; color: var(--ink-2); }
+.rm { display: flex; align-items: center; gap: 6px; flex: none; }
+.dotc { width: 9px; height: 9px; border-radius: 50%; background: var(--dot); }
+.star { color: var(--gold); font-size: 14px; line-height: 1; }
+.flag { font: italic 500 11px var(--serif); padding: 1px 6px; border: 1px solid currentColor; border-radius: 2px; }
+.flag.over { color: var(--danger); }
+.flag.soon { color: var(--ink-2); background: var(--gold-soft); border-color: var(--gold); }
+
+/* week days */
+.day { margin-top: 18px; }
+.dayh { margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 3px; border-bottom: 1px solid var(--rule-2); font: 500 15px var(--serif); }
+.dayh em { font: italic 500 12px var(--serif); color: var(--on-gold); background: var(--gold); padding: 0 8px; border-radius: 8px; }
+.dayb { display: grid; gap: 8px; margin-top: 2px; }
+.boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.box { min-height: 64px; padding: 5px 8px 6px; border: 1px solid var(--rule-2); }
+.bi { font-size: 12.5px; line-height: 1.3; padding-block: 1px; }
+.bi small { display: block; color: var(--ink-2); font-size: 11px; }
+@media (min-width: 620px) {
+  .dayb { grid-template-columns: 1fr 190px; gap: 16px; }
+  .boxes { grid-template-columns: 1fr; }
+}
+
+/* tasks page */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 12px; border-bottom: 1px solid var(--rule-2); }
+.tabs button { border: 0; border-bottom: 3px solid transparent; background: none; padding: 8px 4px 6px; font: italic 500 15px var(--serif); color: var(--ink-2); margin-bottom: -1px; }
+.tabs button sup { font: 600 11px var(--sans); font-style: normal; margin-left: 3px; }
+.tabs button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--gold); }
+.chipbar { margin-top: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--rule-2); padding: 2px 4px 2px 10px; font: italic 500 13px var(--serif); }
+.chip button { border: 0; background: none; width: 24px; height: 24px; font-size: 17px; line-height: 1; }
+.trow { display: flex; align-items: flex-start; gap: 4px; min-height: 52px; padding-block: 5px; border-bottom: 1px solid var(--rule); }
+.trow .st { margin-top: 1px; }
+.tbody { flex: 1; min-width: 0; }
+.tbody .ttl { display: block; width: 100%; padding: 6px 0 0; font-weight: 500; }
+.sub { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 12px; color: var(--ink-2); padding-bottom: 3px; }
+.sub .ov { color: var(--danger); font-weight: 600; }
+.sub .sn { color: var(--ink); font-weight: 600; }
+.sub .pd { display: inline-flex; align-items: center; gap: 5px; }
+.note { margin: 0; padding-bottom: 3px; font: italic 400 12.5px/1.35 var(--serif); color: var(--ink-2); }
+.hint { margin: 12px 0 0; font: italic 400 13.5px var(--serif); color: var(--ink-2); }
+
+/* month page */
+.rate { margin-top: 16px; }
+.rtab { border: 1px solid var(--rule-2); }
+.rr { display: grid; grid-template-columns: 96px 1fr; align-items: center; border-top: 1px solid var(--rule); }
+.rr:first-child { border-top: 0; }
+.rl { padding: 0 8px; font: italic 500 12.5px var(--serif); border-right: 1px solid var(--rule); align-self: stretch; display: flex; align-items: center; }
+.dots { display: grid; grid-template-columns: repeat(10, 1fr); padding-inline: 4px; }
+.dot { height: 32px; border: 0; background: none; padding: 0; display: grid; place-items: center; }
+.dot i { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--ink-2); }
+.dot[aria-pressed="true"] i { background: var(--gold); border-color: var(--gold); }
+.ask { display: grid; gap: 0; margin-top: 12px; }
+.ask span { font: italic 500 14px var(--serif); }
+.ask input, .goal input, .hname input { width: 100%; border: 0; border-bottom: 1px solid var(--rule-2); background: transparent; border-radius: 0; padding: 7px 0 5px; font: 15px var(--sans); }
+.sh { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 26px 0 4px; }
+.sh h3 { margin: 0; font: italic 700 18px var(--serif); }
+.sh span { font: italic 400 11.5px var(--serif); color: var(--ink-2); text-align: right; }
+.goal { display: flex; align-items: center; gap: 2px; }
+.gc { width: 34px; height: 34px; flex: none; border: 0; background: none; display: grid; place-items: center; padding: 0; color: var(--on-gold); }
+.gc i { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--ink-2); display: grid; place-items: center; }
+.gc i svg { width: 10px; height: 10px; }
+.gc[aria-pressed="true"] i { background: var(--gold); border-color: var(--gold); }
+.goal input.done { text-decoration: line-through; color: var(--ink-2); }
+.habit { margin-top: 14px; }
+.hname { display: flex; align-items: center; gap: 4px; }
+.hname input { font-style: italic; font-family: var(--serif); font-size: 14px; font-weight: 500; border-bottom-color: var(--rule); }
+.x { flex: none; width: 28px; height: 28px; border: 0; background: none; color: var(--ink-2); font-size: 18px; line-height: 1; padding: 0; }
+.hg { display: grid; grid-template-columns: repeat(16, 1fr); margin-top: 4px; border-top: 1px solid var(--rule-2); border-left: 1px solid var(--rule-2); }
+.hc { height: 24px; border: 0; border-right: 1px solid var(--rule-2); border-bottom: 1px solid var(--rule-2); background: transparent; padding: 0; font: 500 8.5px var(--serif); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.hc.on { background: var(--gold); color: var(--on-gold); font-weight: 700; }
+.hc.now { text-decoration: underline; text-underline-offset: 2px; color: var(--ink); font-weight: 700; }
+.hc.on.now { color: var(--on-gold); }
+span.hc { display: block; background: repeating-linear-gradient(135deg, transparent 0 3px, var(--rule) 3px 4px); }
+.ghost { margin-top: 16px; border: 1px dashed var(--rule-2); background: none; padding: 9px 14px; font: italic 500 14px var(--serif); color: var(--ink-2); }
+
+/* courses page */
+.course { margin-top: 26px; }
+.cf { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
+.fl { display: flex; align-items: baseline; gap: 8px; min-height: 34px; padding-top: 8px; border-bottom: 1px solid var(--rule-2); }
+.fl.full { grid-column: 1 / -1; }
+.fl span { font: italic 500 12.5px var(--serif); color: var(--ink-2); white-space: nowrap; }
+.fl b { flex: 1; min-width: 0; font: 600 15px var(--sans); overflow-wrap: anywhere; }
+.pen { flex: none; align-self: center; width: 28px; height: 28px; padding: 0; border: 0; background: none; color: var(--ink-2); display: grid; place-items: center; }
+.pen svg { width: 16px; height: 16px; }
+.tbl { margin-top: 12px; border: 1px solid var(--rule-2); }
+.th, .tr { display: grid; grid-template-columns: 1fr 72px 36px; }
+.th > :nth-child(2) { white-space: nowrap; padding-inline: 6px; }
+.th { border-bottom: 1px solid var(--rule-2); font: italic 500 12.5px var(--serif); color: var(--ink-2); }
+.th > *, .tr > * { padding: 5px 8px; min-width: 0; }
+.th > * + *, .tr > * + * { border-left: 1px solid var(--rule-2); }
+.th > :last-child { text-align: center; padding-inline: 0; }
+.tr { min-height: 46px; border-bottom: 1px solid var(--rule); }
+.tr:last-child { border-bottom: 0; }
+.tr .a { display: grid; align-content: center; gap: 1px; }
+.tr .a .pt { display: flex; align-items: center; gap: 6px; text-align: left; background: none; border: 0; padding: 0; font: 500 14px/1.25 var(--sans); }
+.tr .a .pt.isdone { text-decoration: line-through; color: var(--ink-2); }
+.tr .a .pt .dotc { flex: none; }
+.tr .a .pg { justify-self: start; border: 0; background: none; padding: 0; font: italic 400 12px var(--serif); color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
+.tr .a .ex { font: italic 500 13.5px var(--serif); }
+.tr .d { display: grid; align-content: center; font-size: 12px; }
+.tr .d.ov { color: var(--danger); font-weight: 600; }
+.tr .c { display: grid; place-items: center; padding: 0; }
+.cb { width: 100%; height: 100%; min-height: 44px; border: 0; background: none; display: grid; place-items: center; padding: 0; color: var(--on-gold); }
+.cb i { width: 18px; height: 18px; border: 1px solid var(--ink-2); display: grid; place-items: center; border-radius: 2px; }
+.cb i svg { width: 12px; height: 12px; }
+.cb[data-s="doing"] i { border-color: var(--gold); background: linear-gradient(90deg, var(--gold) 50%, transparent 50%); }
+.cb[data-s="done"] i { background: var(--gold); border-color: var(--gold); }
+.fl b .dotc { display: inline-block; margin-right: 7px; vertical-align: 1px; }
+.cnt { flex: none; border: 0; background: none; padding: 0; font: italic 400 12px var(--serif); color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+.ghost.sm { margin-top: 8px; padding: 6px 12px; font-size: 13px; }
+
+/* notification history */
+.nact { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 6px; }
+.nrow { display: grid; grid-template-columns: 14px 1fr auto; gap: 8px; align-items: start; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--rule); background: none; padding: 11px 0; }
+.nd { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; }
+.nrow.unread .nd { background: var(--rose); }
+.nb { display: grid; gap: 2px; min-width: 0; }
+.nb b { font: 600 14.5px/1.3 var(--sans); }
+.nb span { font-size: 12.5px; color: var(--ink-2); }
+.nrow.unread .nb b { color: var(--ink); }
+.nrow:not(.unread) .nb b { font-weight: 500; color: var(--ink-2); }
+.nrow time { font: italic 400 12px var(--serif); color: var(--ink-2); white-space: nowrap; padding-top: 2px; }
+.auto i { border-style: dashed; }
+.auto.on i { background: var(--gold-soft); border-color: var(--gold); border-style: solid; color: var(--ink); }
+
+.foot { margin-top: 26px; text-align: center; font: italic 400 12px var(--serif); color: var(--ink-2); }
+
+/* bottom index tabs + add button */
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: var(--paper); border-top: 1px solid var(--rule-2); padding: 0 12px env(safe-area-inset-bottom, 0px); }
+.nav .in { max-width: 720px; margin-inline: auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+.nav button { border: 0; border-top: 3px solid transparent; background: none; padding: 12px 2px 12px; margin-top: -1px; font: italic 500 15px var(--serif); color: var(--ink-2); }
+.nav button[aria-current="true"] { color: var(--ink); border-top-color: var(--gold); }
+.fab { position: fixed; right: 22px; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); z-index: 6; width: 54px; height: 54px; border-radius: 50%; border: 1px solid #a67f26; background: linear-gradient(150deg, var(--gold-2), var(--gold) 60%); color: var(--on-gold); font: 400 30px/1 var(--sans); padding: 0 0 3px; box-shadow: 0 8px 18px -6px rgba(90, 65, 10, .55); }
+
+/* add / edit sheet */
+.veil { position: fixed; inset: 0; z-index: 10; background: var(--veil); }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 11; max-height: 92%; overflow-y: auto; background: var(--paper); border-radius: 14px 14px 0 0; border-top: 1px solid var(--rule-2); padding: 16px 20px calc(22px + env(safe-area-inset-bottom, 0px)); }
+.sheet .in { max-width: 520px; margin-inline: auto; display: grid; gap: 14px; }
+.sheet header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--rule-2); }
+.sheet header h2 { margin: 0; font: italic 700 23px var(--serif); }
+.sx { border: 1px solid var(--rule); background: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; line-height: 1; padding: 0; }
+.kind { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--rule-2); }
+.kind button { border: 0; background: none; padding: 9px 4px; font: italic 500 15px var(--serif); color: var(--ink-2); }
+.kind button + button { border-left: 1px solid var(--rule-2); }
+.kind button[aria-pressed="true"] { background: var(--gold-soft); color: var(--ink); font-weight: 600; }
+label.f { display: grid; gap: 4px; }
+label.f > span, .grp > span { font: italic 500 13.5px var(--serif); color: var(--ink-2); }
+.req { color: var(--rose); }
+.sheet input[type="text"], .sheet input[type="date"], .sheet select, .sheet textarea { width: 100%; border: 1px solid var(--rule-2); background: transparent; border-radius: 2px; padding: 10px; font-size: 16px; }
+.sheet input.big { font: 500 19px var(--serif); padding: 12px 10px; }
+.sheet select option { background: var(--paper); color: var(--ink); }
+.sheet textarea { min-height: 76px; resize: vertical; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grp { display: grid; gap: 6px; align-content: start; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { border: 1px solid var(--rule-2); background: none; border-radius: 2px; padding: 5px 10px; font-size: 13px; }
+.chips button[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: var(--on-gold); font-weight: 600; }
+.chips.sw button { width: 32px; height: 32px; padding: 0; border-radius: 50%; background: var(--dot); border: 2px solid transparent; }
+.chips.sw button[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 0 0 2px var(--paper) inset; background: var(--dot); }
+.more { border: 0; background: none; padding: 2px 0; text-align: left; font: italic 500 14px var(--serif); color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+.details { display: grid; gap: 14px; padding: 14px; border: 1px dashed var(--rule-2); }
+.save { border: 1px solid #a67f26; background: linear-gradient(150deg, var(--gold-2), var(--gold) 65%); color: var(--on-gold); border-radius: 2px; padding: 14px; font: 700 17px var(--serif); }
+.save:disabled { opacity: .4; cursor: not-allowed; }
+.del { border: 0; background: none; padding: 4px; font: italic 500 14px var(--serif); color: var(--danger); text-decoration: underline; text-underline-offset: 3px; }
+
+/* preview push notification */
+.push { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); left: 20px; right: 20px; z-index: 20; max-width: 480px; margin-inline: auto; background: var(--paper); border: 1px solid var(--rule-2); border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow), 3px 4px 0 var(--cover); display: grid; grid-template-columns: 36px 1fr; gap: 12px; animation: drop .28s ease-out; }
+.push .ic { width: 36px; height: 36px; border-radius: 9px; background: linear-gradient(150deg, var(--gold-2), var(--gold)); color: var(--on-gold); display: grid; place-items: center; }
+.push .ic svg { width: 20px; height: 20px; }
+.push b { display: block; font: 600 14.5px var(--serif); }
+.push p { margin: 2px 0 0; color: var(--ink-2); font-size: 13px; }
+@keyframes drop { from { transform: translateY(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .push { animation: none; } }
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+(function () {
+  var COLORS = ["#c8467f", "#4f86b8", "#c39a3d", "#8a6bbf", "#4f9c78"];
+  var TAGS = ["Typography", "Branding", "Illustration", "Layout", "Photo", "Motion", "Print", "Research", "Critique"];
+  var REM = { none: "No reminder", "0": "On the day", "1": "1 day before", "2": "2 days before", "3": "3 days before", "7": "1 week before" };
+  var STATUS = { todo: "To do", doing: "In progress", done: "Done" };
+  var NEXT = { todo: "doing", doing: "done", done: "todo" };
+  var CATS = ["Studies", "Creativity", "Finances", "Mental", "Physical", "Relationships"];
+  var QUOTES = [
+    "You don’t find the happy life, you make it.",
+    "Have no fear of perfection — you’ll never reach it.",
+    "Creativity takes courage.",
+    "Good design is as little design as possible.",
+    "Done is better than perfect."
+  ];
+  var PAGES = ["week", "month", "tasks", "courses"];
+  var PAGE_LABEL = { week: "Week", month: "Month", tasks: "Tasks", courses: "Courses" };
+  var KEY = "crit-planner-v3";
+
+  /* ---------- dates ---------- */
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function midnight(d) { var x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+  function addDays(d, n) { var x = midnight(d); x.setDate(x.getDate() + n); return x; }
+  function iso(d) { d = midnight(d); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function isoIn(n) { return iso(addDays(new Date(), n)); }
+  function parse(s) { return new Date(s + "T00:00:00"); }
+  function daysUntil(s) { return Math.round((parse(s) - midnight(new Date())) / 864e5); }
+  function mondayOf(d) { var x = midnight(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+  function wk(k) { return iso(addDays(mondayOf(new Date()), k)); }
+  function fmt(d, o) { return d.toLocaleDateString("en", o); }
+  function fmtShort(s) { return fmt(parse(s), { month: "short", day: "numeric" }); }
+  function timeOf(ts) { return new Date(ts).toLocaleTimeString("en", { hour: "numeric", minute: "2-digit" }); }
+  function dayLabel(ts) { var d = midnight(new Date(ts)), n = daysUntil(iso(d)); return n === 0 ? "Today" : n === -1 ? "Yesterday" : fmt(d, { weekday: "long", day: "numeric", month: "short" }); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function dueLabel(s) {
+    var d = daysUntil(s);
+    if (d < 0) return "Overdue " + (-d) + "d";
+    if (d === 0) return "Due today";
+    if (d === 1) return "Tomorrow";
+    if (d < 7) return "In " + d + " days";
+    return fmtShort(s);
+  }
+  function monthKey(off) { var n = new Date(); var d = new Date(n.getFullYear(), n.getMonth() + off, 1); return d.getFullYear() + "-" + pad(d.getMonth() + 1); }
+
+  /* ---------- data ---------- */
+  function seed() {
+    var today = new Date().getDate(), marks = { h1: [], h2: [], h3: [], h4: [] }, i, now = Date.now();
+    for (i = 1; i <= today; i++) {
+      if (i % 3 !== 0) marks.h1.push(i);
+      if (i % 2 === 0) marks.h2.push(i);
+      if (i % 4 !== 1) marks.h3.push(i);
+      if (i < 8 || i % 5 === 0) marks.h4.push(i);
+    }
+    var months = {}, mk = {};
+    months[monthKey(0)] = {
+      win: "Finished the type specimen layout", fail: "Left the Lumen sketches to the last night",
+      proud: "Presented at Thursday crit without notes", focus: "Brand identity + portfolio site", grateful: "My study group, decent coffee",
+      rating: { Studies: 7, Creativity: 8, Finances: 5, Mental: 6, Physical: 4, Relationships: 7 },
+      goals: [{ text: "Finish Café Lumen logo", done: true }, { text: "Print type poster on A2", done: false }, { text: "Portfolio: 3 case studies", done: false }, { text: "", done: false }, { text: "", done: false }]
+    };
+    mk[monthKey(0)] = marks;
+    return {
+      courses: [
+        { id: "c1", title: "Visual Identity 301", color: COLORS[0], mid: isoIn(9), final: isoIn(50), goal: "90%", grade: "" },
+        { id: "c2", title: "Typography II", color: COLORS[1], mid: isoIn(3), final: isoIn(46), goal: "A", grade: "" },
+        { id: "c3", title: "History of Design", color: COLORS[3], mid: isoIn(-12), final: isoIn(52), goal: "B+", grade: "" }
+      ],
+      tasks: [
+        { id: "t1", title: "Finish logo sketches (10 directions)", status: "doing", courseId: "c1", due: wk(3), priority: true, tags: ["Branding"], reminder: "2", notes: "Bring to Thursday crit.", est: "3h" },
+        { id: "t2", title: "Pick 3 typefaces for poster", status: "todo", courseId: "c2", due: wk(1), priority: false, tags: ["Typography"], reminder: "1", notes: "", est: "1h" },
+        { id: "t3", title: "Type specimen poster: hand in", status: "todo", courseId: "c2", due: isoIn(4), priority: true, tags: ["Print"], reminder: "3", notes: "A2, CMYK, 3 mm bleed. Export print-ready PDF.", est: "" },
+        { id: "t4", title: "Mood board for Café Lumen", status: "done", courseId: "c1", due: wk(0), priority: false, tags: ["Research"], reminder: "none", notes: "", est: "" },
+        { id: "t5", title: "Buy A2 paper + spray mount", status: "todo", courseId: "c2", due: wk(2), priority: false, tags: ["Print"], reminder: "1", notes: "", est: "" },
+        { id: "t6", title: "Read: Thinking with Type, ch. 3", status: "todo", courseId: "c2", due: wk(4), priority: false, tags: ["Research"], reminder: "2", notes: "", est: "45m" },
+        { id: "t7", title: "Outline Bauhaus essay", status: "todo", courseId: "c3", due: isoIn(6), priority: false, tags: ["Research"], reminder: "1", notes: "", est: "1h" },
+        { id: "t8", title: "Colour palette + 3 mockups", status: "todo", courseId: "c1", due: isoIn(8), priority: false, tags: ["Branding", "Layout"], reminder: "3", notes: "", est: "4h" },
+        { id: "t9", title: "Café Lumen brand identity: final delivery", status: "todo", courseId: "c1", due: isoIn(12), priority: true, tags: ["Branding"], reminder: "7", notes: "Logo, palette, 3 mockups, guidelines PDF.", est: "" },
+        { id: "t10", title: "Bauhaus essay + poster", status: "todo", courseId: "c3", due: isoIn(20), priority: false, tags: ["Research", "Layout"], reminder: "7", notes: "", est: "" },
+        { id: "t11", title: "Portfolio site: publish", status: "todo", courseId: "", due: isoIn(30), priority: false, tags: [], reminder: "7", notes: "", est: "" },
+        { id: "t12", title: "Email Prof. Aoun about crit slot", status: "todo", courseId: "", due: "", priority: false, tags: [], reminder: "none", notes: "", est: "" }
+      ],
+      habits: [{ id: "h1", name: "Sketch for 20 min" }, { id: "h2", name: "Read a chapter" }, { id: "h3", name: "Walk / stretch" }, { id: "h4", name: "Water 2 L" }],
+      marks: mk, months: months,
+      notifs: [
+        { id: "n1", k: "seed1", ts: now - 2 * 864e5 - 5e6, title: "Due in 2 days: Finish logo sketches (10 directions)", body: "Visual Identity 301 · reminder set 2 days before", taskId: "t1", read: true },
+        { id: "n2", k: "seed2", ts: now - 3 * 864e5 - 9e6, title: "Due tomorrow: Mood board for Café Lumen", body: "Visual Identity 301 · reminder set 1 day before", taskId: "t4", read: true },
+        { id: "n3", k: "seed3", ts: now - 5 * 864e5 - 2e6, title: "Due in 3 days: Type specimen poster: hand in", body: "Typography II · reminder set 3 days before", taskId: "t3", read: true }
+      ]
+    };
+  }
+  function load() { try { var r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch (e) {} return seed(); }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state.data)); } catch (e) {} }
+
+  var hashPage = (location.hash || "").slice(1);
+  var state = { data: load(), page: PAGES.concat("notifs").indexOf(hashPage) > -1 ? hashPage : "week", back: "week", weekOff: 0, monthOff: 0, status: "todo", course: "", sheet: null, toast: null, focus: null };
+
+  function by(list, id) { return list.filter(function (x) { return x.id === id; })[0]; }
+  function course(id) { return by(state.data.courses, id); }
+  function getMonth(key) {
+    var ms = state.data.months;
+    if (!ms[key]) ms[key] = { win: "", fail: "", proud: "", focus: "", grateful: "", rating: {}, goals: [] };
+    while (ms[key].goals.length < 5) ms[key].goals.push({ text: "", done: false });
+    return ms[key];
+  }
+  function marksFor(key, hid) {
+    var mk = state.data.marks; if (!mk[key]) mk[key] = {}; if (!mk[key][hid]) mk[key][hid] = [];
+    return mk[key][hid];
+  }
+
+  /* ---------- alerts + notification log ---------- */
+  function isSoon(t) {
+    if (t.status === "done" || !t.due) return false;
+    var d = daysUntil(t.due), w = t.reminder === "none" ? -1 : parseInt(t.reminder, 10);
+    return d >= 0 && w >= 0 && d <= w;
+  }
+  function isOver(t) { return t.status !== "done" && t.due && daysUntil(t.due) < 0; }
+  function alerts() { return state.data.tasks.filter(function (t) { return isSoon(t) || isOver(t); }).sort(function (a, b) { return a.due < b.due ? -1 : 1; }); }
+  function unread() { return state.data.notifs.filter(function (n) { return !n.read; }).length; }
+  /* what a real push would have sent: one per task per reminder, one "overdue" per task */
+  function syncNotifs() {
+    var ns = state.data.notifs, have = {}, added = false;
+    ns.forEach(function (n) { have[n.k] = 1; });
+    state.data.tasks.forEach(function (t) {
+      var kind = isOver(t) ? "over" : isSoon(t) ? "soon" : null; if (!kind) return;
+      var k = t.id + "|" + kind + "|" + t.due; if (have[k]) return;
+      var c = course(t.courseId), d = daysUntil(t.due), pre = c ? c.title + " · " : "";
+      ns.push({
+        id: "n" + Math.random().toString(36).slice(2, 8), k: k, ts: Date.now() + ns.length, taskId: t.id, read: false,
+        title: kind === "over" ? "Overdue: " + t.title : (d === 0 ? "Due today: " : d === 1 ? "Due tomorrow: " : "Due in " + d + " days: ") + t.title,
+        body: kind === "over" ? pre + "was due " + fmtShort(t.due) : pre + "reminder set " + REM[t.reminder].toLowerCase()
+      });
+      added = true;
+    });
+    return added;
+  }
+
+  /* ---------- icons ---------- */
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>';
+  var BELL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 1 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>';
+  var PREV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"/></svg>';
+  var NXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"/></svg>';
+  var PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>';
+
+  /* ---------- shared pieces ---------- */
+  function head() {
+    var un = unread();
+    if (state.page === "notifs") {
+      return '<header class="head"><button class="hb" data-a="back" aria-label="Back">' + PREV + '</button><div class="hm" style="padding-left:4px"><b>Notifications</b><span>' + (un ? un + " unread" : "All caught up") + "</span></div></header>";
+    }
+    var ref, sub, nav = state.page === "week" || state.page === "month";
+    if (state.page === "week") {
+      var mon = addDays(mondayOf(new Date()), state.weekOff * 7), sun = addDays(mon, 6);
+      ref = mon;
+      sub = fmt(mon, { day: "numeric", month: "short" }) + " – " + fmt(sun, { day: "numeric", month: "short" }) + " · " + ref.getFullYear();
+    } else if (state.page === "month") {
+      ref = new Date(new Date().getFullYear(), new Date().getMonth() + state.monthOff, 1);
+      sub = ref.getFullYear() + (state.monthOff === 0 ? " · this month" : "");
+    } else {
+      ref = new Date(); sub = fmt(ref, { weekday: "long" }) + " " + ref.getDate() + " · " + ref.getFullYear();
+    }
+    return '<header class="head"><div class="num">' + pad(ref.getMonth() + 1) + '</div><div class="hm"><b>' + fmt(ref, { month: "long" }) + "</b><span>" + esc(sub) + "</span></div>" +
+      (nav ? '<button class="hb" data-a="prev" aria-label="Previous">' + PREV + '</button><button class="hb" data-a="next" aria-label="Next">' + NXT + "</button>" : "") +
+      '<button class="hb" data-a="bell" aria-label="Notifications' + (un ? ", " + un + " unread" : "") + '">' + BELL + (un ? '<span class="n">' + un + "</span>" : "") + "</button></header>";
+  }
+  function alertBox() {
+    var al = alerts(); if (!al.length) return "";
+    return '<section class="alert" aria-label="Due soon"><span class="bl">Reminder: needs you now</span><ul>' +
+      al.slice(0, 4).map(function (t) { return '<li class="' + (isOver(t) ? "over" : "") + '"><span>' + esc(t.title) + "</span><em>" + dueLabel(t.due) + "</em></li>"; }).join("") +
+      '</ul><button class="link" data-a="bell">See all notifications</button></section>';
+  }
+  function stBtn(t) {
+    return '<button class="st" data-a="cycle" data-id="' + t.id + '" data-s="' + t.status + '" aria-label="' + esc(t.title) + " — " + STATUS[t.status] + '. Tap to change status."><i>' + (t.status === "done" ? CHECK : "") + "</i></button>";
+  }
+
+  /* ---------- week ---------- */
+  function weekView() {
+    var mon = addDays(mondayOf(new Date()), state.weekOff * 7);
+    var wn = Math.floor(mon.getTime() / 6048e5);
+    var h = head() + '<p class="quote">' + esc(QUOTES[wn % QUOTES.length]) + "</p>" + alertBox();
+    for (var i = 0; i < 7; i++) h += dayBlock(addDays(mon, i), i);
+    return h;
+  }
+  function dayBlock(d, idx) {
+    var key = iso(d), isToday = key === iso(new Date());
+    var ts = state.data.tasks.filter(function (t) { return t.due === key; }).sort(function (a, b) { return (a.status === "done") - (b.status === "done"); });
+    var dues = [];
+    ts.forEach(function (t) { if (t.priority && t.status !== "done") { var c = course(t.courseId); dues.push({ t: "★ " + t.title, s: c ? c.title : "" }); } });
+    state.data.courses.forEach(function (c) {
+      if (c.mid === key) dues.push({ t: "Mid-term exam", s: c.title });
+      if (c.final === key) dues.push({ t: "Final exam", s: c.title });
+    });
+    var rems = state.data.tasks.filter(function (t) {
+      return t.status !== "done" && t.due && t.reminder !== "none" && iso(addDays(parse(t.due), -parseInt(t.reminder, 10))) === key;
+    });
+    var rows = ts.map(function (t) {
+      var c = course(t.courseId), fl = "";
+      if (isOver(t)) fl += '<span class="flag over">overdue</span>'; else if (isSoon(t)) fl += '<span class="flag soon">soon</span>';
+      if (t.priority) fl += '<span class="star" aria-label="Priority">★</span>';
+      if (c) fl += '<span class="dotc" style="--dot:' + c.color + '" title="' + esc(c.title) + '"></span>';
+      return '<div class="row' + (t.status === "done" ? " isdone" : "") + '">' + stBtn(t) + '<button class="ttl" data-a="edit" data-id="' + t.id + '">' + esc(t.title) + '</button><span class="rm">' + fl + "</span></div>";
+    }).join("");
+    for (var b = ts.length; b < (idx > 4 ? 2 : 3); b++) rows += '<div class="row blank"></div>';
+    return '<section class="day"><h3 class="dayh"><span>' + fmt(d, { weekday: "long" }) + " " + d.getDate() + "</span>" + (isToday ? "<em>today</em>" : "") + '</h3><div class="dayb"><div>' + rows + '</div><div class="boxes">' +
+      '<div class="box"><span class="bl">Due today:</span>' + dues.map(function (x) { return '<div class="bi">' + esc(x.t) + (x.s ? "<small>" + esc(x.s) + "</small>" : "") + "</div>"; }).join("") + "</div>" +
+      '<div class="box"><span class="bl">Reminder:</span>' + rems.map(function (t) { var n = parseInt(t.reminder, 10); return '<div class="bi">' + esc(t.title) + "<small>" + (n === 0 ? "due today" : "due " + fmt(parse(t.due), { weekday: "short", day: "numeric" })) + "</small></div>"; }).join("") + "</div>" +
+      "</div></div></section>";
+  }
+
+  /* ---------- tasks ---------- */
+  function tasksView() {
+    var tasks = state.data.tasks.filter(function (t) { return !state.course || t.courseId === state.course; });
+    var counts = { todo: 0, doing: 0, done: 0 };
+    tasks.forEach(function (t) { counts[t.status]++; });
+    var h = head() + '<h2 class="ptitle">To-do list</h2>' + alertBox();
+    h += '<div class="tabs">' + ["todo", "doing", "done"].map(function (s) {
+      return '<button data-a="status" data-s="' + s + '" aria-pressed="' + (state.status === s) + '">' + STATUS[s] + "<sup>" + counts[s] + "</sup></button>";
+    }).join("") + "</div>";
+    if (state.course) { var c = course(state.course); h += '<div class="chipbar"><span class="chip">' + esc(c ? c.title : "") + '<button data-a="clearcourse" aria-label="Show all courses">×</button></span></div>'; }
+    var shown = tasks.filter(function (t) { return t.status === state.status; }).sort(function (a, b) { return (a.due || "9999") < (b.due || "9999") ? -1 : 1; });
+    var rows = shown.map(taskRow).join("");
+    for (var i = shown.length; i < 4; i++) rows += '<div class="trow"></div>';
+    if (!shown.length) h += '<p class="hint">Nothing under “' + STATUS[state.status] + '” yet. Tap + to write one down.</p>';
+    return h + '<div style="margin-top:6px">' + rows + "</div>";
+  }
+  function taskRow(t) {
+    var c = course(t.courseId), sub = "";
+    if (t.due) sub += '<span class="' + (isOver(t) ? "ov" : isSoon(t) ? "sn" : "") + '">' + dueLabel(t.due) + "</span>";
+    if (c) sub += '<span class="pd"><span class="dotc" style="--dot:' + c.color + '"></span>' + esc(c.title) + "</span>";
+    if (t.est) sub += "<span>" + esc(t.est) + "</span>";
+    if ((t.tags || []).length) sub += "<span>" + esc(t.tags.join(" · ")) + "</span>";
+    return '<div class="trow' + (t.status === "done" ? " isdone" : "") + '">' + stBtn(t) + '<div class="tbody"><button class="ttl" data-a="edit" data-id="' + t.id + '">' + (t.priority ? '<span class="star">★</span> ' : "") + esc(t.title) + "</button>" +
+      (sub ? '<div class="sub">' + sub + "</div>" : "") + (t.notes ? '<p class="note">' + esc(t.notes) + "</p>" : "") + "</div></div>";
+  }
+
+  /* ---------- month ---------- */
+  function monthView() {
+    var key = monthKey(state.monthOff), m = getMonth(key);
+    var base = new Date(new Date().getFullYear(), new Date().getMonth() + state.monthOff, 1);
+    var dim = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+    var isNow = state.monthOff === 0, todayN = new Date().getDate();
+    var h = head() + '<h2 class="ptitle big">Let’s get it done.</h2>';
+    h += '<div class="rate"><span class="bl">Last month’s rating</span><div class="rtab">' + CATS.map(function (c) {
+      var v = m.rating[c] || 0, dots = "";
+      for (var i = 1; i <= 10; i++) dots += '<button class="dot" data-a="rate" data-k="' + c + '" data-v="' + i + '" aria-pressed="' + (i <= v) + '" aria-label="' + c + ": " + i + ' of 10"><i></i></button>';
+      return '<div class="rr"><span class="rl">' + c + '</span><div class="dots">' + dots + "</div></div>";
+    }).join("") + "</div></div>";
+    [["win", "Last month’s win"], ["fail", "What didn’t work last month?"], ["proud", "What am I proud of?"], ["focus", "What will I work on this month?"], ["grateful", "What am I grateful for?"]].forEach(function (q) {
+      h += '<label class="ask" for="m-' + q[0] + '"><span>' + q[1] + '</span><input type="text" id="m-' + q[0] + '" data-f="' + q[0] + '" value="' + esc(m[q[0]]) + '" autocomplete="off"></label>';
+    });
+    h += '<div class="sh"><h3>Monthly Goals</h3><span>Big goals, daily commitment.</span></div>';
+    m.goals.forEach(function (g, i) {
+      h += '<div class="goal"><button class="gc" data-a="goal" data-i="' + i + '" aria-pressed="' + !!g.done + '" aria-label="Goal ' + (i + 1) + ' done"><i>' + (g.done ? CHECK : "") + '</i></button><input type="text" id="g-' + i + '" data-g="' + i + '" class="' + (g.done ? "done" : "") + '" value="' + esc(g.text) + '" autocomplete="off" aria-label="Goal ' + (i + 1) + '"></div>';
+    });
+    h += '<div class="sh"><h3>Habit tracker</h3></div>';
+    state.data.habits.forEach(function (hb) {
+      var on = marksFor(key, hb.id), cells = "";
+      for (var d = 1; d <= 32; d++) {
+        if (d > dim) cells += '<span class="hc"></span>';
+        else cells += '<button class="hc' + (on.indexOf(d) > -1 ? " on" : "") + (isNow && d === todayN ? " now" : "") + '" data-a="hday" data-id="' + hb.id + '" data-v="' + d + '" aria-pressed="' + (on.indexOf(d) > -1) + '" aria-label="' + esc(hb.name) + ", day " + d + '">' + d + "</button>";
+      }
+      h += '<div class="habit"><div class="hname"><input type="text" id="hn-' + hb.id + '" data-hn="' + hb.id + '" value="' + esc(hb.name) + '" aria-label="Habit name"><button class="x" data-a="delhabit" data-id="' + hb.id + '" aria-label="Remove habit">×</button></div><div class="hg">' + cells + "</div></div>";
+    });
+    return h + '<button class="ghost" data-a="addhabit">+ Add a habit</button>';
+  }
+
+  /* ---------- courses ---------- */
+  function coursesView() {
+    var h = head() + '<h2 class="ptitle">Courses Planner</h2>';
+    state.data.courses.forEach(function (c) { h += courseBlock(c); });
+    if (state.data.tasks.some(function (t) { return !course(t.courseId); })) h += courseBlock(null);
+    return h + '<button class="ghost" data-a="newcourse">+ Add a course</button>';
+  }
+  function courseBlock(c) {
+    var ts = state.data.tasks.filter(function (t) { return c ? t.courseId === c.id : !course(t.courseId); });
+    ts.sort(function (a, b) { return ((a.status === "done") - (b.status === "done")) || ((a.due || "9999") < (b.due || "9999") ? -1 : 1); });
+    var dn = ts.filter(function (t) { return t.status === "done"; }).length;
+    var h = '<section class="course"><div class="cf">';
+    if (c) {
+      h += '<div class="fl full"><span>Course</span><b><span class="dotc" style="--dot:' + c.color + '"></span>' + esc(c.title) + '</b><button class="cnt" data-a="opencourse" data-id="' + c.id + '">' + dn + "/" + ts.length + ' done ›</button><button class="pen" data-a="editcourse" data-id="' + c.id + '" aria-label="Edit ' + esc(c.title) + '">' + PEN + "</button></div>" +
+        '<div class="fl"><span>Mid-Term Date</span><b>' + (c.mid ? fmtShort(c.mid) : "") + "</b></div><div class=\"fl\"><span>Goal grade</span><b>" + esc(c.goal) + "</b></div>" +
+        '<div class="fl"><span>Final Date</span><b>' + (c.final ? fmtShort(c.final) : "") + "</b></div><div class=\"fl\"><span>Final grade</span><b>" + esc(c.grade) + "</b></div>";
+    } else {
+      h += '<div class="fl full"><span>Course</span><b>No course · personal</b></div>';
+    }
+    h += '</div><div class="tbl"><div class="th"><span>Assignments / Exams</span><span>Due Date</span><span>✓</span></div>';
+    var n = 0;
+    ts.forEach(function (t) {
+      var sub = [t.est].concat(t.tags || []).filter(Boolean).join(" · ");
+      n++;
+      h += '<div class="tr"><div class="a"><button class="pt' + (t.status === "done" ? " isdone" : "") + '" data-a="edit" data-id="' + t.id + '">' + (t.priority ? '<span class="star">★</span>' : "") + esc(t.title) + "</button>" + (sub ? '<span class="pg" style="text-decoration:none">' + esc(sub) + "</span>" : "") + "</div>" +
+        '<div class="d' + (isOver(t) ? " ov" : "") + '">' + (t.due ? fmtShort(t.due) : "") + '</div><div class="c"><button class="cb" data-a="cycle" data-id="' + t.id + '" data-s="' + t.status + '" aria-label="' + esc(t.title) + " — " + STATUS[t.status] + '. Tap to change status."><i>' + (t.status === "done" ? CHECK : "") + "</i></button></div></div>";
+    });
+    if (c) [["Mid-term exam", c.mid], ["Final exam", c.final]].forEach(function (x) {
+      if (!x[1]) return; n++;
+      var past = daysUntil(x[1]) < 0;
+      h += '<div class="tr"><div class="a"><span class="ex">' + x[0] + '</span></div><div class="d">' + fmtShort(x[1]) + '</div><div class="c"><span class="cb auto' + (past ? " on" : "") + '" aria-label="' + (past ? "Passed" : "Upcoming") + '"><i>' + (past ? CHECK : "") + "</i></span></div></div>";
+    });
+    for (; n < 3; n++) h += '<div class="tr"><div class="a"></div><div class="d"></div><div class="c"></div></div>';
+    return h + '</div><button class="ghost sm" data-a="newin" data-id="' + (c ? c.id : "") + '">+ Add a task' + (c ? " to this course" : "") + "</button></section>";
+  }
+
+  /* ---------- notification history ---------- */
+  function notifsView() {
+    var ns = state.data.notifs.slice().sort(function (a, b) { return b.ts - a.ts; });
+    var h = head() + '<div class="nact">' + (unread() ? '<button class="link" data-a="readall">Mark all read</button>' : "") + '<button class="link" data-a="test">Send a test notification</button></div>';
+    if (!ns.length) h += '<p class="hint">Nothing sent yet. Set a reminder on a task and it will show up here.</p>';
+    var last = "";
+    ns.forEach(function (n) {
+      var g = dayLabel(n.ts);
+      if (g !== last) { h += '<h3 class="dayh" style="margin-top:18px"><span>' + g + "</span></h3>"; last = g; }
+      h += '<button class="nrow' + (n.read ? "" : " unread") + '" data-a="opennotif" data-id="' + n.id + '"><span class="nd"></span><span class="nb"><b>' + esc(n.title) + "</b><span>" + esc(n.body) + "</span></span><time>" + timeOf(n.ts) + "</time></button>";
+    });
+    return h + '<div class="alert" style="margin-top:24px"><span class="bl">While the app is closed</span><div style="font-size:13px">This list shows what the planner would send. Lock-screen alerts with the app closed aren’t switched on in this preview.</div></div>';
+  }
+
+  /* ---------- add / edit sheet ---------- */
+  function blank(kind) {
+    return { kind: kind, more: false, editId: "", armDelete: false, title: "", courseId: state.course || "", due: "", reminder: "2", tags: [], est: "", priority: false, notes: "", color: COLORS[0], mid: "", final: "", goal: "", grade: "" };
+  }
+  function sheetView() {
+    var s = state.sheet, k = s.kind, ed = !!s.editId;
+    var ph = k === "task" ? "e.g. Sketch 10 logo directions" : "e.g. Typography II";
+    var h = '<div class="veil" data-a="close"></div><div class="sheet" role="dialog" aria-label="' + (ed ? "Edit " : "New ") + k + '"><div class="in">' +
+      '<header><h2>' + (ed ? "Edit " : "New ") + k + '</h2><button class="sx" data-a="close" aria-label="Close">×</button></header>';
+    if (!ed) h += '<div class="kind">' + ["task", "course"].map(function (x) { return '<button data-a="kind" data-v="' + x + '" aria-pressed="' + (k === x) + '">' + x.charAt(0).toUpperCase() + x.slice(1) + "</button>"; }).join("") + "</div>";
+    h += '<label class="f" for="f-title"><span>' + (k === "course" ? "Course name" : "Title") + ' <span class="req">required</span></span><input class="big" type="text" id="f-title" placeholder="' + ph + '" value="' + esc(s.title) + '" autocomplete="off"></label>';
+    if (k === "task") h += '<button class="more" data-a="more" aria-expanded="' + s.more + '">' + (s.more ? "− Hide extra fields" : "+ Add details (all optional)") + "</button>";
+    if (s.more || k === "course") {
+      h += '<div class="details">';
+      if (k === "task") {
+        h += '<label class="f" for="f-course"><span>Course</span><select id="f-course"><option value="">None</option>' + state.data.courses.map(function (c) { return '<option value="' + c.id + '"' + (s.courseId === c.id ? " selected" : "") + ">" + esc(c.title) + "</option>"; }).join("") + "</select></label>" +
+          '<div class="two"><label class="f" for="f-due"><span>Due date</span><input type="date" id="f-due" value="' + esc(s.due) + '"></label>' +
+          '<label class="f" for="f-rem"><span>Remind me</span><select id="f-rem">' + Object.keys(REM).map(function (x) { return '<option value="' + x + '"' + (s.reminder === x ? " selected" : "") + ">" + REM[x] + "</option>"; }).join("") + "</select></label></div>" +
+          '<div class="grp"><span>Type of work</span><div class="chips">' + TAGS.map(function (g) { return '<button data-a="tag" data-v="' + g + '" aria-pressed="' + (s.tags.indexOf(g) > -1) + '">' + g + "</button>"; }).join("") + "</div></div>" +
+          '<div class="two"><label class="f" for="f-est"><span>Time needed</span><input type="text" id="f-est" placeholder="e.g. 2h" value="' + esc(s.est) + '"></label>' +
+          '<div class="grp"><span>Priority</span><div class="chips"><button data-a="prio" aria-pressed="' + s.priority + '">★ Important</button></div></div></div>' +
+          '<label class="f" for="f-notes"><span>Notes / brief</span><textarea id="f-notes" placeholder="Brief, feedback from crit, links…">' + esc(s.notes) + "</textarea></label>";
+      } else {
+        h += '<div class="two"><label class="f" for="f-mid"><span>Mid-term date</span><input type="date" id="f-mid" value="' + esc(s.mid) + '"></label><label class="f" for="f-final"><span>Final date</span><input type="date" id="f-final" value="' + esc(s.final) + '"></label></div>' +
+          '<div class="two"><label class="f" for="f-goal"><span>Goal grade</span><input type="text" id="f-goal" placeholder="e.g. 90%" value="' + esc(s.goal) + '"></label><label class="f" for="f-grade"><span>Final grade</span><input type="text" id="f-grade" value="' + esc(s.grade) + '"></label></div>' +
+          '<div class="grp"><span>Colour label</span><div class="chips sw">' + COLORS.map(function (c) { return '<button style="--dot:' + c + '" data-a="color" data-v="' + c + '" aria-pressed="' + (s.color === c) + '" aria-label="Colour ' + c + '"></button>'; }).join("") + "</div></div>";
+      }
+      h += "</div>";
+    }
+    h += '<button class="save" data-a="save"' + (s.title.trim() ? "" : " disabled") + ">" + (ed ? "Save changes" : "Add " + k) + "</button>";
+    if (ed) h += '<button class="del" data-a="delete">' + (s.armDelete ? "Tap again to delete for good" : "Delete this " + k) + "</button>";
+    return h + "</div></div>";
+  }
+  var FIELDS = { title: "f-title", notes: "f-notes", est: "f-est", due: "f-due", courseId: "f-course", reminder: "f-rem", mid: "f-mid", final: "f-final", goal: "f-goal", grade: "f-grade" };
+  function readSheet() {
+    var s = state.sheet; if (!s) return;
+    Object.keys(FIELDS).forEach(function (k) { var e = document.getElementById(FIELDS[k]); if (e) s[k] = e.value; });
+  }
+  function sheetFor(kind, o) {
+    var s = blank(kind); s.editId = o.id; s.more = true; s.title = o.title || "";
+    if (kind === "task") { s.courseId = o.courseId || ""; s.due = o.due || ""; s.reminder = o.reminder || "none"; s.tags = (o.tags || []).slice(); s.est = o.est || ""; s.priority = !!o.priority; s.notes = o.notes || ""; }
+    else { s.mid = o.mid || ""; s.final = o.final || ""; s.goal = o.goal || ""; s.grade = o.grade || ""; s.color = o.color || COLORS[0]; }
+    return s;
+  }
+  function uid() { return "x" + Math.random().toString(36).slice(2, 9); }
+  function saveSheet() {
+    var s = state.sheet, d = state.data, t = s.title.trim(); if (!t) return;
+    var list = s.kind === "task" ? d.tasks : d.courses;
+    var o = s.editId ? by(list, s.editId) : null;
+    var f = s.kind === "task" ? { title: t, courseId: s.courseId, due: s.due, priority: s.priority, tags: s.tags.slice(), reminder: s.reminder, notes: s.notes.trim(), est: s.est.trim() }
+      : { title: t, mid: s.mid, final: s.final, goal: s.goal.trim(), grade: s.grade.trim(), color: s.color };
+    if (o) Object.keys(f).forEach(function (k) { o[k] = f[k]; });
+    else {
+      f.id = uid(); if (s.kind === "task") f.status = "todo";
+      list.push(f);
+      if (s.kind === "task" && (state.page === "month" || state.page === "notifs")) { state.page = "tasks"; state.status = "todo"; }
+      if (s.kind === "course") state.page = "courses";
+    }
+  }
+  function deleteSheet() {
+    var s = state.sheet, d = state.data;
+    if (s.kind === "task") d.tasks = d.tasks.filter(function (x) { return x.id !== s.editId; });
+    else { d.courses = d.courses.filter(function (x) { return x.id !== s.editId; }); d.tasks.forEach(function (x) { if (x.courseId === s.editId) x.courseId = ""; }); if (state.course === s.editId) state.course = ""; }
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    if (syncNotifs()) save();
+    var pg = state.page, page = pg === "week" ? weekView() : pg === "month" ? monthView() : pg === "tasks" ? tasksView() : pg === "notifs" ? notifsView() : coursesView();
+    var h = '<main class="paper">' + page + '<div class="foot">Example data · saved only on this device · <button class="link" style="padding:0" data-a="reset">reset</button></div></main>';
+    h += '<nav class="nav" aria-label="Planner pages"><div class="in">' + PAGES.map(function (p) { return '<button data-a="tab" data-v="' + p + '" aria-current="' + (pg === p) + '">' + PAGE_LABEL[p] + "</button>"; }).join("") + "</div></nav>";
+    if (pg !== "notifs") h += '<button class="fab" data-a="new" aria-label="Add new">+</button>';
+    if (state.sheet) h += sheetView();
+    if (state.toast) h += '<div class="push" role="status"><div class="ic">' + BELL + "</div><div><b>" + esc(state.toast.title) + "</b><p>" + esc(state.toast.body) + "</p></div></div>";
+    var keep = document.activeElement && document.activeElement.id, val = keep ? document.activeElement.value : null;
+    document.getElementById("app").innerHTML = h;
+    if (keep) { var el = document.getElementById(keep); if (el) { el.focus(); if (val != null && "value" in el) { try { var p = val.length; el.setSelectionRange(p, p); } catch (e) {} } } }
+  }
+  function notify(title, body) { state.toast = { title: title, body: body }; render(); clearTimeout(notify.t); notify.t = setTimeout(function () { state.toast = null; render(); }, 4200); }
+
+  /* ---------- events ---------- */
+  var app = document.getElementById("app");
+  app.addEventListener("input", function (e) {
+    var t = e.target;
+    if (state.sheet) {
+      readSheet();
+      if (t.id === "f-title") { var b = app.querySelector(".save"); if (b) b.disabled = !state.sheet.title.trim(); }
+      return;
+    }
+    var m = getMonth(monthKey(state.monthOff));
+    if (t.hasAttribute("data-f")) { m[t.getAttribute("data-f")] = t.value; save(); }
+    else if (t.hasAttribute("data-g")) { m.goals[+t.getAttribute("data-g")].text = t.value; save(); }
+    else if (t.hasAttribute("data-hn")) { var hb = by(state.data.habits, t.getAttribute("data-hn")); if (hb) { hb.name = t.value; save(); } }
+  });
+  app.addEventListener("change", function () { readSheet(); });
+  app.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-a]"); if (!el) return;
+    var a = el.getAttribute("data-a"), v = el.getAttribute("data-v"), id = el.getAttribute("data-id"), d = state.data;
+    readSheet();
+    var mk = monthKey(state.monthOff);
+    if (a === "tab") { state.page = v; window.scrollTo(0, 0); }
+    else if (a === "bell") { if (state.page !== "notifs") state.back = state.page; state.page = "notifs"; window.scrollTo(0, 0); }
+    else if (a === "back") { state.page = state.back || "week"; window.scrollTo(0, 0); }
+    else if (a === "prev" || a === "next") { var dir = a === "prev" ? -1 : 1; if (state.page === "week") state.weekOff += dir; else state.monthOff += dir; }
+    else if (a === "status") { state.status = el.getAttribute("data-s"); }
+    else if (a === "clearcourse") { state.course = ""; }
+    else if (a === "opencourse") { state.course = id; state.page = "tasks"; state.status = "todo"; window.scrollTo(0, 0); }
+    else if (a === "cycle") { var t = by(d.tasks, id); t.status = NEXT[t.status]; save(); }
+    else if (a === "edit") { state.sheet = sheetFor("task", by(d.tasks, id)); }
+    else if (a === "editcourse") { state.sheet = sheetFor("course", by(d.courses, id)); }
+    else if (a === "new") { state.sheet = blank("task"); }
+    else if (a === "newin") { state.sheet = blank("task"); state.sheet.courseId = id; state.sheet.more = true; }
+    else if (a === "newcourse") { state.sheet = blank("course"); }
+    else if (a === "close") { state.sheet = null; }
+    else if (a === "kind") { state.sheet.kind = v; }
+    else if (a === "more") { state.sheet.more = !state.sheet.more; }
+    else if (a === "tag") { var i = state.sheet.tags.indexOf(v); if (i > -1) state.sheet.tags.splice(i, 1); else state.sheet.tags.push(v); }
+    else if (a === "prio") { state.sheet.priority = !state.sheet.priority; }
+    else if (a === "color") { state.sheet.color = v; }
+    else if (a === "delete") { if (!state.sheet.armDelete) state.sheet.armDelete = true; else { deleteSheet(); state.sheet = null; save(); } }
+    else if (a === "save") { saveSheet(); state.sheet = null; save(); }
+    else if (a === "rate") { var m = getMonth(mk), n = +v, k = el.getAttribute("data-k"); m.rating[k] = (m.rating[k] === n ? 0 : n); save(); }
+    else if (a === "goal") { var g = getMonth(mk).goals[+el.getAttribute("data-i")]; g.done = !g.done; save(); }
+    else if (a === "hday") { var arr = marksFor(mk, id), dd = +v, ix = arr.indexOf(dd); if (ix > -1) arr.splice(ix, 1); else arr.push(dd); save(); }
+    else if (a === "addhabit") { var nid = uid(); d.habits.push({ id: nid, name: "" }); save(); state.focus = "hn-" + nid; }
+    else if (a === "delhabit") { d.habits = d.habits.filter(function (x) { return x.id !== id; }); save(); }
+    else if (a === "readall") { d.notifs.forEach(function (n) { n.read = true; }); save(); }
+    else if (a === "opennotif") { var nf = by(d.notifs, id); nf.read = true; save(); var tk = by(d.tasks, nf.taskId); if (tk) state.sheet = sheetFor("task", tk); }
+    else if (a === "reset") { state.data = seed(); save(); }
+    else if (a === "test") {
+      var al = alerts()[0], c = al && course(al.courseId);
+      return notify(al ? "Due " + (daysUntil(al.due) <= 0 ? "now" : "soon") + ": " + al.title : "All clear", al ? dueLabel(al.due) + (c ? " · " + c.title : "") : "Nothing due in the next few days.");
+    }
+    render();
+    if (state.focus) { var f = document.getElementById(state.focus); state.focus = null; if (f) f.focus(); }
+  });
+  render();
+})();
+</script>
