@@ -254,3 +254,10 @@ label.f > span, .grp > span { font: italic 500 13.5px var(--serif); color: var(-
 .push p { margin: 2px 0 0; color: var(--ink-2); font-size: 13px; }
 @keyframes drop { from { transform: translateY(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .push { animation: none; } }
+
+/* sign-in */
+.login { display: grid; gap: 14px; margin-top: 18px; }
+.login label { display: grid; gap: 4px; }
+.login label span { font: italic 500 13.5px var(--serif); color: var(--ink-2); }
+.login input { width: 100%; border: 1px solid var(--rule-2); background: transparent; border-radius: 2px; padding: 11px 10px; font-size: 16px; }
+.login .err { margin: 0; color: var(--danger); font-size: 13.5px; }

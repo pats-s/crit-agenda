@@ -62,7 +62,7 @@ export function NotifsPage() {
 
 /** Backup, restore, calendar export and reset. */
 function DataTools() {
-  const { data, replaceData, resetData } = useApp()
+  const { data, replaceData, loadExample, clearAll, signOut, user } = useApp()
   const file = useRef<HTMLInputElement>(null)
 
   const onFile = async (f: File | undefined) => {
@@ -86,9 +86,17 @@ function DataTools() {
         <button className="link" style={{ textAlign: 'left' }} onClick={() => file.current?.click()}>
           Import a backup
         </button>
-        <button className="link" style={{ textAlign: 'left' }} onClick={() => confirm('Replace everything with the example data?') && resetData()}>
-          Reset to example data
+        <button className="link" style={{ textAlign: 'left' }} onClick={() => confirm('Delete every course, task, habit and month page from this device AND your account, and start with a blank planner?') && clearAll()}>
+          Start fresh (delete everything)
         </button>
+        <button className="link" style={{ textAlign: 'left' }} onClick={() => confirm('Replace everything, in your account too, with the example data?') && loadExample()}>
+          Load the example data
+        </button>
+      </div>
+      <h3 className="sh" style={{ margin: '20px 0 4px' }}><span style={{ font: 'italic 700 18px var(--serif)', color: 'var(--ink)' }}>Account</span></h3>
+      <p style={{ margin: '0 0 2px', fontSize: 13, color: 'var(--ink-2)' }}>Signed in as {user.email}</p>
+      <div className="nact">
+        <button className="link" onClick={() => void signOut()}>Sign out</button>
       </div>
       <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => onFile(e.target.files?.[0])} />
     </div>

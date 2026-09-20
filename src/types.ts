@@ -9,6 +9,7 @@ export interface Course {
   final: string
   goal: string
   grade: string
+  pos?: number // display order, set when syncing
 }
 
 export interface Task {
@@ -27,6 +28,7 @@ export interface Task {
 export interface Habit {
   id: string
   name: string
+  pos?: number
 }
 
 export interface Goal {

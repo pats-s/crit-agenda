@@ -1,8 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { NEXT } from './constants'
-import { alertsOf, syncNotifs } from './logic'
+import { syncNotifs } from './logic'
 import { seed } from './seed'
-import { loadData, saveData } from './storage'
+import { clearLocal, emptyData, loadData, saveData, setTouched } from './storage'
+import { supabase } from './supabase'
+import { useSync, type SyncState } from './sync'
 import type { Data, Status } from './types'
 
 export type Page = 'week' | 'month' | 'tasks' | 'courses' | 'notifs'
@@ -21,11 +23,20 @@ interface Toast {
   body: string
 }
 
+export interface User {
+  id: string
+  email: string
+}
+
 interface Ctx {
+  user: User
   data: Data
   update: (fn: (d: Data) => void) => void
   replaceData: (d: Data) => void
-  resetData: () => void
+  loadExample: () => void
+  clearAll: () => void
+  signOut: () => Promise<void>
+  sync: SyncState
   unread: number
   page: Page
   go: (p: Page) => void
@@ -53,7 +64,7 @@ export const useApp = () => useContext(AppContext)
 const startPage = (): Page => PAGES.find((p) => p === location.hash.slice(1)) ?? 'week'
 const top = () => window.scrollTo(0, 0)
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({ user, children }: { user: User; children: ReactNode }) {
   const [data, setData] = useState<Data>(loadData)
   const [page, setPage] = useState<Page>(startPage)
   const [back, setBack] = useState<Page>('week')
@@ -64,36 +75,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sheet, setSheet] = useState<SheetState | null>(null)
   const [toast, setToast] = useState<Toast | null>(null)
   const toastTimer = useRef<number>(0)
+  const sync = useSync(user.id, data, setData)
 
   useEffect(() => saveData(data), [data])
 
-  const update = useCallback((fn: (d: Data) => void) => {
+  /** Change data without counting it as the person's own edit (used for automatic notifications). */
+  const change = useCallback((fn: (d: Data) => void) => {
     setData((prev) => {
       const d = structuredClone(prev)
       fn(d)
       return d
     })
   }, [])
+  /** A change the person made. */
+  const update = useCallback((fn: (d: Data) => void) => {
+    setTouched(true)
+    change(fn)
+  }, [change])
 
   // Log the notifications a real push would have sent. Deduped by key, so it settles after one pass.
   useEffect(() => {
     const added = syncNotifs(data)
     if (!added.length) return
-    update((d) => {
+    change((d) => {
       const have = new Set(d.notifs.map((n) => n.k))
       for (const n of added) if (!have.has(n.k)) d.notifs.push(n)
     })
-  }, [data, update])
+  }, [data, change])
 
   const go = (p: Page) => {
     setPage(p)
     top()
   }
+  const replaceData = (d: Data) => {
+    setTouched(true)
+    setData(d)
+  }
   const value: Ctx = {
+    user,
     data,
     update,
-    replaceData: setData,
-    resetData: () => setData(seed()),
+    replaceData,
+    loadExample: () => replaceData(seed()),
+    clearAll: () => replaceData(emptyData()),
+    signOut: async () => {
+      if (sync.hasPending() && !confirm('Some changes have not reached your account yet. Sign out anyway and lose them?')) return
+      await supabase.auth.signOut()
+      clearLocal()
+    },
+    sync,
     unread: data.notifs.filter((n) => !n.read).length,
     page,
     go,
@@ -131,5 +161,3 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
 }
-
-export { alertsOf }

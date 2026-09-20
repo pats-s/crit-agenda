@@ -37,7 +37,7 @@ export function syncNotifs(d: Data): Notif[] {
     const pre = c ? c.title + ' · ' : ''
     const days = daysUntil(t.due)
     out.push({
-      id: uid(), k, ts: Date.now() + out.length, taskId: t.id, read: false,
+      id: 'n_' + k, k, ts: Date.now() + out.length, taskId: t.id, read: false,
       title: kind === 'over'
         ? `Overdue: ${t.title}`
         : (days === 0 ? 'Due today: ' : days === 1 ? 'Due tomorrow: ' : `Due in ${days} days: `) + t.title,
