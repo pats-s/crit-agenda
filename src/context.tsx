@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { NEXT } from './constants'
+import { purgeExample } from './example'
 import { syncNotifs } from './logic'
-import { seed } from './seed'
 import { clearLocal, emptyData, loadData, saveData, setTouched } from './storage'
 import { supabase } from './supabase'
 import { useSync, type SyncState } from './sync'
@@ -33,7 +33,6 @@ interface Ctx {
   data: Data
   update: (fn: (d: Data) => void) => void
   replaceData: (d: Data) => void
-  loadExample: () => void
   clearAll: () => void
   signOut: () => Promise<void>
   sync: SyncState
@@ -93,6 +92,12 @@ export function AppProvider({ user, children }: { user: User; children: ReactNod
     change(fn)
   }, [change])
 
+  // Remove leftover demo items from early builds (see example.ts)
+  useEffect(() => {
+    const clean = purgeExample(data)
+    if (clean !== data) setData(clean)
+  }, [data])
+
   // Log the notifications a real push would have sent. Deduped by key, so it settles after one pass.
   useEffect(() => {
     const added = syncNotifs(data)
@@ -116,7 +121,6 @@ export function AppProvider({ user, children }: { user: User; children: ReactNod
     data,
     update,
     replaceData,
-    loadExample: () => replaceData(seed()),
     clearAll: () => replaceData(emptyData()),
     signOut: async () => {
       if (sync.hasPending() && !confirm('Some changes have not reached your account yet. Sign out anyway and lose them?')) return

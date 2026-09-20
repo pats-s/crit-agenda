@@ -62,7 +62,7 @@ export function NotifsPage() {
 
 /** Backup, restore, calendar export and reset. */
 function DataTools() {
-  const { data, replaceData, loadExample, clearAll, signOut, user } = useApp()
+  const { data, replaceData, clearAll, signOut, user } = useApp()
   const file = useRef<HTMLInputElement>(null)
 
   const onFile = async (f: File | undefined) => {
@@ -88,9 +88,6 @@ function DataTools() {
         </button>
         <button className="link" style={{ textAlign: 'left' }} onClick={() => confirm('Delete every course, task, habit and month page from this device AND your account, and start with a blank planner?') && clearAll()}>
           Start fresh (delete everything)
-        </button>
-        <button className="link" style={{ textAlign: 'left' }} onClick={() => confirm('Replace everything, in your account too, with the example data?') && loadExample()}>
-          Load the example data
         </button>
       </div>
       <h3 className="sh" style={{ margin: '20px 0 4px' }}><span style={{ font: 'italic 700 18px var(--serif)', color: 'var(--ink)' }}>Account</span></h3>

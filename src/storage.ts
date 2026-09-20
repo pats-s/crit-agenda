@@ -1,4 +1,3 @@
-import { seed } from './seed'
 import type { Data } from './types'
 
 /**
@@ -27,10 +26,10 @@ export function loadData(): Data {
       return normalize(JSON.parse(raw))
     }
   } catch {
-    /* private mode or corrupt data: fall through to example data */
+    /* private mode or corrupt data: fall through to an empty planner */
   }
   setTouched(false)
-  return seed()
+  return emptyData()
 }
 
 export function saveData(d: Data) {
