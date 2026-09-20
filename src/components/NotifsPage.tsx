@@ -1,8 +1,9 @@
-import { useRef } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { useApp } from '../context'
 import { dayLabel, daysUntil, dueLabel, timeOf } from '../dates'
-import { backupJson, buildIcs, download, parseBackup } from '../export'
+import { backupJson, download, parseBackup } from '../export'
 import { alertsOf, courseOf } from '../logic'
+import { supabase } from '../supabase'
 import { Head } from './Head'
 
 export function NotifsPage() {
@@ -52,7 +53,7 @@ export function NotifsPage() {
       <div className="alert" style={{ marginTop: 24 }}>
         <span className="bl">While the app is closed</span>
         <div style={{ fontSize: 13 }}>
-          This list shows what the planner would send. Lock-screen alerts with the app closed need the next build step (accounts and a push service). Until then, add your reminders to the phone’s calendar below.
+          This list shows what the planner would send. Alerts on your lock screen while the app is closed are coming in a later update.
         </div>
       </div>
       <DataTools />
@@ -60,7 +61,7 @@ export function NotifsPage() {
   )
 }
 
-/** Backup, restore, calendar export and reset. */
+/** Backup, restore, start fresh, and the account. */
 function DataTools() {
   const { data, replaceData, clearAll, signOut, user } = useApp()
   const file = useRef<HTMLInputElement>(null)
@@ -77,9 +78,6 @@ function DataTools() {
     <div style={{ marginTop: 22 }}>
       <h3 className="sh" style={{ margin: '0 0 4px' }}><span style={{ font: 'italic 700 18px var(--serif)', color: 'var(--ink)' }}>Your data</span></h3>
       <div className="nact" style={{ flexDirection: 'column', gap: 2 }}>
-        <button className="link" style={{ textAlign: 'left' }} onClick={() => download('crit-agenda-reminders.ics', 'text/calendar', buildIcs(data))}>
-          Add my reminders to the calendar (.ics)
-        </button>
         <button className="link" style={{ textAlign: 'left' }} onClick={() => download('crit-agenda-backup.json', 'application/json', backupJson(data))}>
           Export a backup
         </button>
@@ -92,10 +90,65 @@ function DataTools() {
       </div>
       <h3 className="sh" style={{ margin: '20px 0 4px' }}><span style={{ font: 'italic 700 18px var(--serif)', color: 'var(--ink)' }}>Account</span></h3>
       <p style={{ margin: '0 0 2px', fontSize: 13, color: 'var(--ink-2)' }}>Signed in as {user.email}</p>
+      <ChangePassword />
       <div className="nact">
         <button className="link" onClick={() => void signOut()}>Sign out</button>
       </div>
       <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => onFile(e.target.files?.[0])} />
     </div>
+  )
+}
+
+/** Lets a signed-in person choose a new password. No email needed. */
+function ChangePassword() {
+  const [open, setOpen] = useState(false)
+  const [pw, setPw] = useState('')
+  const [again, setAgain] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (pw.length < 8) return setMsg({ ok: false, text: 'Use at least 8 characters.' })
+    if (pw !== again) return setMsg({ ok: false, text: 'The two passwords don’t match.' })
+    setBusy(true)
+    const { error } = await supabase.auth.updateUser({ password: pw })
+    setBusy(false)
+    if (error) {
+      const m = error.message
+      return setMsg({
+        ok: false,
+        text: /same|different/i.test(m) ? 'Pick a password different from the current one.'
+          : /reauth|recent/i.test(m) ? 'For safety, sign out and back in, then try again.'
+          : m,
+      })
+    }
+    setPw('')
+    setAgain('')
+    setOpen(false)
+    setMsg({ ok: true, text: 'Password changed.' })
+  }
+
+  return (
+    <>
+      <div className="nact">
+        <button className="link" onClick={() => { setOpen(!open); setMsg(null) }} aria-expanded={open}>Change password</button>
+        {msg?.ok && <span style={{ fontSize: 13, color: 'var(--ink-2)' }} role="status">{msg.text}</span>}
+      </div>
+      {open && (
+        <form className="login" style={{ marginTop: 8 }} onSubmit={submit}>
+          <label htmlFor="cp-new">
+            <span>New password (8 or more characters)</span>
+            <input id="cp-new" type="password" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} />
+          </label>
+          <label htmlFor="cp-again">
+            <span>Repeat it</span>
+            <input id="cp-again" type="password" autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} />
+          </label>
+          {msg && !msg.ok && <p className="err" role="alert">{msg.text}</p>}
+          <button className="save" type="submit" disabled={busy || !pw}>{busy ? 'Saving…' : 'Save password'}</button>
+        </form>
+      )}
+    </>
   )
 }
